@@ -39,6 +39,7 @@ public class Main {
 					}
 					inputAttr.add(attr);
 				}
+				
 				for(int i=1; i<= num_example; i++) {
 					for(int j=0; j< num_attr; j++) {
 						Attribute attr = inputAttr.get(j);
@@ -61,17 +62,15 @@ public class Main {
 					partitions.add(list);
 				}
 				
+				for(int i=0; i<inputAttr.size(); i++) {
+					printAttribute(inputAttr.get(i));
+				}
+				
 				MOD_ID3 id3 = new MOD_ID3();
 				
 				List<List<String>> result = id3.getNextPartition(partitions, inputAttr);
 				
-				for(int i=0; i<result.size(); i++) {
-					List<String> part = result.get(i);
-					for(int j=0; j<part.size(); j++) {
-						System.out.print(part.get(j) + " ");
-					}
-					System.out.println();
-				}
+				printPartition(result);
 				
 				s_dataset.close();
 				s_partition.close();
@@ -83,6 +82,24 @@ public class Main {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+	
+	
+	public static void printPartition(List<List<String>> result) {
+		for(int i=0; i<result.size(); i++) {
+			List<String> part = result.get(i);
+			for(int j=0; j<part.size(); j++) {
+				System.out.print(part.get(j) + " ");
+			}
+			System.out.println();
+		}
+	}
+	
+	public static void printAttribute(Attribute attr) {
+		Map<Integer, Integer>map = attr.getDataSet();
+		for(Map.Entry<Integer, Integer> entry : map.entrySet()) {
+			System.out.println("key: "+entry.getKey()+" val: "+entry.getValue());
 		}
 	}
 }
