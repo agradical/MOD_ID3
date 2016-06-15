@@ -62,10 +62,6 @@ public class Main {
 					partitions.add(list);
 				}
 				
-				for(int i=0; i<inputAttr.size(); i++) {
-					printAttribute(inputAttr.get(i));
-				}
-				
 				MOD_ID3 id3 = new MOD_ID3();
 				
 				List<List<String>> result = id3.getNextPartition(partitions, inputAttr);
@@ -84,7 +80,6 @@ public class Main {
 			e.printStackTrace();
 		}
 	}
-	
 	
 	public static void printPartition(List<List<String>> result) {
 		for(int i=0; i<result.size(); i++) {

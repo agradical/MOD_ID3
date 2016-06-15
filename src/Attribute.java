@@ -1,7 +1,6 @@
 import java.util.*;
 
 public class Attribute {
-	public String name;
 	public Map<Integer, Integer> dataSet;
 	public boolean target = false;
 	
@@ -14,21 +13,6 @@ public class Attribute {
 		this.dataSet = attr.getDataSet();
 	}
 	
-	public Attribute(Attribute attribute, Attribute conditionalSplitAttribute, Integer split, boolean target) {
-		
-		Map<Integer, Integer> conditionalSplitDataSet = conditionalSplitAttribute.getDataSet();
-		Map<Integer, Integer> splitedDataSet = new HashMap<Integer, Integer>();
-		
-		for(Map.Entry<Integer, Integer> entry: conditionalSplitDataSet.entrySet()) {
-			if(entry.getValue() == split) {
-				splitedDataSet.put(entry.getKey(), split);
-			}
-		}
-		
-		this.dataSet = splitedDataSet;
-		this.target = target;
-	}
-
 	public Attribute getPartition(List<Integer> partitionList) {
 		Map<Integer, Integer> data = new HashMap<Integer, Integer>();
 		for(int i=0; i<partitionList.size(); i++) {
@@ -37,22 +21,19 @@ public class Attribute {
 		return new Attribute(data, false);
 	}
 	
-	public double getEntropy(Attribute conditionalAttribute) {
-		
+	public double getEntropy() {
 		Map<Integer, Integer> dataCount = new HashMap<Integer, Integer>();
-		
 		int totalexamples = 0;
-		for(Map.Entry<Integer, Integer> entry: conditionalAttribute.getDataSet().entrySet()) {
-			if(dataSet.containsKey(entry.getKey())) {
-				if(!dataCount.containsKey(entry.getValue())) {
-					dataCount.put(entry.getValue(), 1);
-				} 
-				else {
-					Integer count = dataCount.get(entry.getValue());
-					dataCount.put(entry.getValue(), count++);
-				}
-				totalexamples++;
+		for(Map.Entry<Integer, Integer> entry: dataSet.entrySet()) {
+			if(!dataCount.containsKey(entry.getValue())) {
+				dataCount.put(entry.getValue(), 1);
+			} 
+			else {
+				Integer count = dataCount.get(entry.getValue());
+				count++;
+				dataCount.put(entry.getValue(), count);
 			}
+			totalexamples++;
 		}
 		
 		double entropy = 0.0;
@@ -61,6 +42,36 @@ public class Attribute {
 			int val = entry.getValue();
 			double pr = (double)val/(double)totalexamples;
 			entropy += pr*((Math.log(1/pr))/(Math.log(2)));
+		}
+		return entropy;
+	}
+	
+	public double getEntropy(Attribute conditionalAttribute) {
+		Map<Integer, List<Integer>> dataPartition = new HashMap<Integer, List<Integer>>();
+		int totalexamples = 0;
+		for(Map.Entry<Integer, Integer> entry: conditionalAttribute.getDataSet().entrySet()) {
+			if(dataSet.containsKey(entry.getKey())) {
+				if(!dataPartition.containsKey(entry.getValue())) {
+					List<Integer> partitionList = new ArrayList<Integer>();
+					partitionList.add(entry.getKey());
+					dataPartition.put(entry.getValue(), partitionList);
+				} else {
+					List<Integer> partitionList = dataPartition.get(entry.getValue());
+					partitionList.add(entry.getKey());
+					dataPartition.put(entry.getValue(), partitionList);
+				}
+				totalexamples++;
+			}
+		}
+		
+		double entropy = 0.0;
+		for(Map.Entry<Integer, List<Integer>> entry: dataPartition.entrySet()) {
+			Attribute a = this.getPartition(entry.getValue());
+			double _entropy = a.getEntropy();
+			double pr = (double)(entry.getValue().size())/totalexamples;
+			_entropy = _entropy*pr;
+			
+			entropy += _entropy;
 		}
 		
 		return entropy;
@@ -73,22 +84,4 @@ public class Attribute {
 	public void setDataSet(Map<Integer, Integer> dataSet) {
 		this.dataSet = dataSet;
 	}
-
-	public boolean isTarget() {
-		return target;
-	}
-
-	public void setTarget(boolean target) {
-		this.target = target;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	
 }
