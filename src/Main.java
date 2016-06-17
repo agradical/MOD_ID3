@@ -1,4 +1,6 @@
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -66,7 +68,8 @@ public class Main {
 				
 				List<List<String>> result = id3.getNextPartition(partitions, inputAttr);
 				
-				printPartition(result);
+				//printPartition(result);
+				writePartitionToFile(result, out_partition);
 				
 				s_dataset.close();
 				s_partition.close();
@@ -89,6 +92,18 @@ public class Main {
 			}
 			System.out.println();
 		}
+	}
+	
+	public static void writePartitionToFile(List<List<String>> result, File file) throws FileNotFoundException {
+		PrintWriter pw = new PrintWriter(file);
+		for(int i=0; i<result.size(); i++) {
+			List<String> part = result.get(i);
+			for(int j=0; j<part.size(); j++) {
+				pw.write(part.get(j) + " ");
+			}
+			pw.write("\n");
+		}
+		pw.close();
 	}
 	
 	public static void printAttribute(Attribute attr) {

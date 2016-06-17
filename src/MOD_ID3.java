@@ -27,11 +27,16 @@ public class MOD_ID3 {
 				double pr = (double)intval_partition.size()/(double)attributes.get(j).getDataSet().size();
 				double f = pr*gain;
 				
+				//System.out.println("parition "+i+" attribute "+j);
+				//Main.printAttribute(a);
+				//System.out.println(entropy+" "+conditional_entropy+" "+gain+" "+pr+" "+f);
+				
 				if(f > f_max) {
 					f_max = f;
 					attr_index = j;
 					partition_index = i;
 				}
+				
 			}
 		}
 		
